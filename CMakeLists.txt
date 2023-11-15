@@ -24,5 +24,6 @@ target_include_directories(${PROJECT_NAME}
 include_directories(${SDL2_INCLUDE_DIR})
 
 find_package(SDL2 REQUIRED)
+find_package(SDL2_image REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARY})

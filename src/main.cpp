@@ -16,6 +16,7 @@
 #include "light.h"
 #include "camera.h"
 #include "cube.h"
+#include "skybox.h"
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
@@ -27,6 +28,7 @@ SDL_Renderer* renderer;
 std::vector<Object*> objects;
 Light light(glm::vec3(-1.0, 0, 10), 1.5f, Color(255, 255, 255));
 Camera camera(glm::vec3(0.0, 0.0, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 10.0f);
+Skybox skybox("../assets/front2.png");
 
 
 void point(glm::vec2 position, Color color) {
@@ -63,7 +65,8 @@ Color castRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, const s
     }
 
     if (!intersect.isIntersecting || recursion == MAX_RECURSION) {
-        return Color(173, 216, 230);
+        glm::vec3 skyboxColor = skybox.getColor(rayDirection);
+        return Color(skyboxColor.r, skyboxColor.g, skyboxColor.b); 
     }
 
 
