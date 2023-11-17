@@ -264,6 +264,66 @@ void setUpBee() {
     objects.push_back(new Cube(bigCubePosition + glm::vec3(0.15f, 0.9f, 1.3f), 0.17f, eyebrow1));
 }
 
+void setUpFlower() {
+    //PETALS
+    Material color1 = {
+        Color(171, 99, 242),
+        1.0,
+        0.2,
+        9.0f,
+        0.0f,
+        0.0f
+    };
+
+    Material color2 = {
+        Color(180, 129, 227),
+        1.0,
+        0.2,
+        9.0f,
+        0.0f,
+        0.0f
+    };
+
+    Material color3 = {
+        Color(184, 118, 242),
+        1.0,
+        0.2,
+        9.0f,
+        0.0f,
+        0.0f
+    };
+
+    objects.push_back(new Cube(glm::vec3(2.0f, -0.42f, 1.5f), 0.2f, color3));
+    objects.push_back(new Cube(glm::vec3(2.1f, -0.32f, 1.5f), 0.2f, color1));
+    objects.push_back(new Cube(glm::vec3(1.9f, -0.32f, 1.5f), 0.2f, color2));
+    objects.push_back(new Cube(glm::vec3(2.0f, -0.22f, 1.5f), 0.2f, color3));
+
+    //TALLO
+    Material green1 = {
+        Color(100, 158, 64),
+        1.0,
+        0.2,
+        9.0f,
+        0.0f,
+        0.0f
+    };
+
+    Material green2 = {
+        Color(125, 188, 89),
+        1.0,
+        0.2,
+        9.0f,
+        0.0f,
+        0.0f
+    };
+
+    objects.push_back(new Cube(glm::vec3(2.0f, -0.9f, 1.5f), 0.15, green1));
+    objects.push_back(new Cube(glm::vec3(2.0f, -0.8f, 1.5f), 0.15f, green2));
+    objects.push_back(new Cube(glm::vec3(2.0f, -0.7f, 1.5f), 0.15f, green1));
+    objects.push_back(new Cube(glm::vec3(2.0f, -0.6f, 1.5f), 0.15f, green2));
+
+}
+
 void render() {
     float fov = 3.1415/3;
     for (int y = 0; y < SCREEN_HEIGHT; y++) {
@@ -327,6 +387,7 @@ int main(int argc, char* argv[]) {
     Uint32 currentTime = startTime;
     
     setUpBee();
+    setUpFlower();
 
     while (running) {
         while (SDL_PollEvent(&event)) {
