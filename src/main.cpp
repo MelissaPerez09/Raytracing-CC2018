@@ -18,6 +18,7 @@
 #include "cube.h"
 #include "skybox.h"
 
+Skybox skybox("../assets/skybox.png");
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 const float ASPECT_RATIO = static_cast<float>(SCREEN_WIDTH) / static_cast<float>(SCREEN_HEIGHT);
@@ -28,7 +29,6 @@ SDL_Renderer* renderer;
 std::vector<Object*> objects;
 Light light(glm::vec3(-1.0, 0, 10), 1.5f, Color(255, 255, 255));
 Camera camera(glm::vec3(0.0, 0.0, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 10.0f);
-Skybox skybox("../assets/skybox.png");
 
 
 void point(glm::vec2 position, Color color) {
@@ -97,68 +97,177 @@ Color castRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, const s
         refractedColor = castRay(origin, refractDir, recursion + 1); 
     }
 
-
-
     Color diffuseLight = mat.diffuse * light.intensity * diffuseLightIntensity * mat.albedo * shadowIntensity;
     Color specularLight = light.color * light.intensity * specLightIntensity * mat.specularAlbedo * shadowIntensity;
     Color color = (diffuseLight + specularLight) * (1.0f - mat.reflectivity - mat.transparency) + reflectedColor * mat.reflectivity + refractedColor * mat.transparency;
     return color;
 } 
 
-void setUp() {
-    Material rubber = {
-        Color(80, 0, 0),   // diffuse
-        0.9,
-        0.1,
-        10.0f,
+void setUpBee() {
+    // BEE MAIN BODY
+    Material yellow1 = {
+        Color(172, 154, 82),
+        1.0,
+        0.0,
+        9.0f,
         0.0f,
         0.0f
     };
 
-    Material ivory = {
-        Color(100, 100, 80),
-        0.5,
-        0.5,
-        50.0f,
-        0.4f,
+    Material yellow2 = {
+        Color(164, 140, 53),
+        1.0,
+        0.0,
+        9.0f,
+        0.0f,
         0.0f
     };
 
-    Material mirror = {
-        Color(255, 255, 255),
+    Material yellow3 = {
+        Color(152, 123, 39),
+        1.0,
+        0.0,
+        9.0f,
         0.0f,
-        10.0f,
-        1425.0f,
-        0.9f,
         0.0f
     };
 
-    Material glass = {
-        Color(255, 255, 255),
-        0.0f,
-        10.0f,
-        1425.0f,
-        0.2f,
+    glm::vec3 bigCubePosition(0.0f, 0.0f, 0.0f); // Center at (0, 0, 0)
+    float bigCubeSideLength = 1.5f;
+    int gridResolution = 5;
+
+    float smallCubeSideLength = bigCubeSideLength / gridResolution;
+    std::srand(std::time(0));
+
+    // Create the grid of smaller cubes
+    for (int x = 0; x < gridResolution; ++x) {
+        for (int y = 0; y < gridResolution; ++y) {
+            for (int z = 0; z < gridResolution; ++z) {
+                glm::vec3 smallCubePosition = bigCubePosition + glm::vec3(x * smallCubeSideLength, y * smallCubeSideLength, z * smallCubeSideLength);
+
+                int materialIndex = std::rand() % 3;
+                Material cubeMaterial;
+
+                switch (materialIndex) {
+                    case 0:
+                        cubeMaterial = yellow1;
+                        break;
+                    case 1:
+                        cubeMaterial = yellow2;
+                        break;
+                    case 2:
+                        cubeMaterial = yellow3;
+                        break;
+                }
+                objects.push_back(new Cube(smallCubePosition, smallCubeSideLength, cubeMaterial));
+            }
+        }
+    }
+
+    //WINGS
+    Material gray1 = {
+        Color(112, 116, 117),
+        1.0,
+        0.0,
+        9.0f,
+        0.1f,
+        0.3f
+    };
+
+    Material gray2 = {
+        Color(172, 175, 172),
+        1.0,
+        0.0,
+        9.0f,
+        0.1f,
+        0.3f
+    };
+
+    Material gray3 = {
+        Color(122, 125, 130),
+        1.0,
+        0.0,
+        9.0f,
+        0.1f,
+        0.3f
+    };
+
+   //left
+    objects.push_back(new Cube(glm::vec3(0.0f, 2.0f, 0.5f), 0.3f, gray1));
+    objects.push_back(new Cube(glm::vec3(0.0f, 2.0f, 0.5f), 0.3f, gray2));
+    objects.push_back(new Cube(glm::vec3(0.3f, 1.8f, 0.5f), 0.3f, gray2));
+    objects.push_back(new Cube(glm::vec3(0.3f, 1.8f, 0.5f), 0.3f, gray3));
+    objects.push_back(new Cube(glm::vec3(0.4f, 1.5f, 0.5f), 0.3f, gray1));
+    objects.push_back(new Cube(glm::vec3(0.4f, 1.5f, 0.5f), 0.3f, gray3));
+
+    //right
+    objects.push_back(new Cube(glm::vec3(1.3f, 2.0f, 0.5f), 0.3f, gray2));
+    objects.push_back(new Cube(glm::vec3(1.3f, 2.0f, 0.5f), 0.3f, gray3));
+    objects.push_back(new Cube(glm::vec3(1.0f, 1.8f, 0.5f), 0.3f, gray1));
+    objects.push_back(new Cube(glm::vec3(1.0f, 1.8f, 0.5f), 0.3f, gray2));
+    objects.push_back(new Cube(glm::vec3(0.9f, 1.5f, 0.5f), 0.3f, gray3));
+    objects.push_back(new Cube(glm::vec3(0.9f, 1.5f, 0.5f), 0.3f, gray1));
+
+    //EYES
+    Material border = {
+        Color(32, 29, 36),
+        1.0,
+        0.0,
+        9.0f,
         1.0f,
+        0.0f
     };
-    objects.push_back(new Cube(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, rubber));
-    objects.push_back(new Cube(glm::vec3(-1.0f, 0.0f, -4.0f), 1.0f, ivory));
-    objects.push_back(new Cube(glm::vec3(1.0f, 0.0f, -4.0f), 1.0f, mirror));
-    objects.push_back(new Cube(glm::vec3(0.0f, 1.0f, -3.0f), 1.0f, glass));
+
+    Material center = {
+        Color(85, 133, 136),
+        1.0,
+        0.0,
+        9.0f,
+        0.5f,
+        0.0f
+    };
+
+    objects.push_back(new Cube(bigCubePosition + glm::vec3(0.9f, 0.5f, 1.25f), 0.3f, border));
+    objects.push_back(new Cube(bigCubePosition + glm::vec3(0.9f, 0.4f, 1.25f), 0.3f, border));
+    objects.push_back(new Cube(bigCubePosition + glm::vec3(0.3f, 0.5f, 1.25f), 0.3f, border));
+    objects.push_back(new Cube(bigCubePosition + glm::vec3(0.3f, 0.4f, 1.25f), 0.3f, border));
+    objects.push_back(new Cube(bigCubePosition + glm::vec3(0.85f, 0.5f, 1.35f), 0.2f, center));
+    objects.push_back(new Cube(bigCubePosition + glm::vec3(0.35f, 0.5f, 1.35f), 0.2f, center));
+
+    //EYEBROW
+    Material eyebrow1 = {
+        Color(46, 46, 36),
+        1.0,
+        0.0,
+        9.0f,
+        0.0f,
+        0.0f
+    };
+
+    Material eyebrow2 = {
+        Color(29, 29, 27),
+        1.0,
+        0.0,
+        9.0f,
+        0.0f,
+        0.0f
+    };
+
+    //right
+    objects.push_back(new Cube(bigCubePosition + glm::vec3(0.9f, 0.9f, 1.3f), 0.17f, eyebrow1));
+    objects.push_back(new Cube(bigCubePosition + glm::vec3(1.05f, 0.9f, 1.3f), 0.17f, eyebrow2));
+    objects.push_back(new Cube(bigCubePosition + glm::vec3(1.15f, 0.9f, 1.3f), 0.17f, eyebrow2));
+
+    //left
+    objects.push_back(new Cube(bigCubePosition + glm::vec3(0.4f, 0.9f, 1.3f), 0.17f, eyebrow2));
+    objects.push_back(new Cube(bigCubePosition + glm::vec3(0.25f, 0.9f, 1.3f), 0.17f, eyebrow1));
+    objects.push_back(new Cube(bigCubePosition + glm::vec3(0.15f, 0.9f, 1.3f), 0.17f, eyebrow1));
 }
 
 void render() {
     float fov = 3.1415/3;
     for (int y = 0; y < SCREEN_HEIGHT; y++) {
         for (int x = 0; x < SCREEN_WIDTH; x++) {
-            /*
-            float random_value = static_cast<float>(std::rand())/static_cast<float>(RAND_MAX);
-            if (random_value < 0.0) {
-                continue;
-            }
-            */
-
-
             float screenX = (2.0f * (x + 0.5f)) / SCREEN_WIDTH - 1.0f;
             float screenY = -(2.0f * (y + 0.5f)) / SCREEN_HEIGHT + 1.0f;
             screenX *= ASPECT_RATIO;
@@ -175,7 +284,6 @@ void render() {
             );
            
             Color pixelColor = castRay(camera.position, rayDirection);
-            /* Color pixelColor = castRay(glm::vec3(0,0,20), glm::normalize(glm::vec3(screenX, screenY, -1.0f))); */
 
             point(glm::vec2(x, y), pixelColor);
         }
@@ -218,7 +326,7 @@ int main(int argc, char* argv[]) {
     Uint32 startTime = SDL_GetTicks();
     Uint32 currentTime = startTime;
     
-    setUp();
+    setUpBee();
 
     while (running) {
         while (SDL_PollEvent(&event)) {
@@ -270,7 +378,7 @@ int main(int argc, char* argv[]) {
         // Calculate and display FPS
         if (SDL_GetTicks() - currentTime >= 1000) {
             currentTime = SDL_GetTicks();
-            std::string title = "Hello World - FPS: " + std::to_string(frameCount);
+            std::string title = "BEEyou- FPS: " + std::to_string(frameCount);
             SDL_SetWindowTitle(window, title.c_str());
             frameCount = 0;
         }
