@@ -28,7 +28,7 @@ SDL_Renderer* renderer;
 std::vector<Object*> objects;
 Light light(glm::vec3(-1.0, 0, 10), 1.5f, Color(255, 255, 255));
 Camera camera(glm::vec3(0.0, 0.0, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 10.0f);
-Skybox skybox("../assets/front2.png");
+Skybox skybox("../assets/skybox.png");
 
 
 void point(glm::vec2 position, Color color) {
@@ -229,10 +229,12 @@ int main(int argc, char* argv[]) {
             if (event.type == SDL_KEYDOWN) {
                 switch(event.key.keysym.sym) {
                     case SDLK_UP:
-                        camera.move(-1.0f);
+                        print("up");
+                        camera.rotate(0.0f, 1.0f);
                         break;
                     case SDLK_DOWN:
-                        camera.move(1.0f);
+                        print("down");
+                        camera.rotate(0.0f, -1.0f);
                         break;
                     case SDLK_LEFT:
                         print("left");
@@ -241,6 +243,12 @@ int main(int argc, char* argv[]) {
                     case SDLK_RIGHT:
                         print("right");
                         camera.rotate(1.0f, 0.0f);
+                        break;
+                    case SDLK_RETURN:
+                        camera.move(1.0f);
+                        break;
+                    case SDLK_SPACE:
+                        camera.move(-1.0f);
                         break;
                  }
             }
